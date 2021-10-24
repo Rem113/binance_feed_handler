@@ -1,11 +1,11 @@
+use websocket::client::sync::Client;
 use websocket::ClientBuilder;
 use websocket::message::OwnedMessage::Text;
+use websocket::websocket_base::stream::sync::NetworkStream;
 
 use crate::Config;
+use crate::logger::{Logger, LogWriter, StdOutLogWriter};
 use crate::trade::Trade;
-use websocket::client::sync::Client;
-use websocket::websocket_base::stream::sync::NetworkStream;
-use crate::logger::{Logger, StdOutLogWriter, LogWriter};
 
 pub fn run(config: &Config) {
     let mut client_builder = ClientBuilder::new(config.server_url.as_str())

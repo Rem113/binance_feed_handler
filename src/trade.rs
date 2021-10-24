@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum Symbol {
@@ -26,5 +26,5 @@ pub struct Trade {
     #[serde(rename = "T")]
     trade_time: usize,
     #[serde(rename = "m")]
-    buyer_is_market_maker: bool
+    buyer_is_market_maker: bool,
 }

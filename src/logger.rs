@@ -1,5 +1,6 @@
-use std::error::Error;
 use core::fmt;
+use std::error::Error;
+
 use serde::__private::Formatter;
 
 #[derive(Debug)]
