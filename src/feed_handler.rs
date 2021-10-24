@@ -3,14 +3,23 @@ use websocket::message::OwnedMessage::Text;
 
 use crate::Config;
 use crate::trade::Trade;
+use websocket::client::sync::Client;
+use websocket::websocket_base::stream::sync::NetworkStream;
+use crate::logger::{Logger, StdOutLogWriter, LogWriter};
 
 pub fn run(config: &Config) {
     let mut client_builder = ClientBuilder::new(config.server_url.as_str())
         .expect("Invalid URL");
 
-    let mut client = client_builder.connect(None)
+    let client = client_builder.connect(None)
         .expect("Failed to connect to client");
 
+    let logger = Logger::new(StdOutLogWriter);
+
+    listen(client, logger);
+}
+
+fn listen<W: LogWriter>(mut client: Client<Box<dyn NetworkStream + Send>>, logger: Logger<W>) {
     let message_iterator = client.incoming_messages()
         .filter_map(|message| message.ok())
         .filter(|message| message.is_data());
@@ -19,7 +28,7 @@ pub fn run(config: &Config) {
         match message {
             Text(text) => {
                 let trade: Trade = serde_json::from_str(&text).unwrap();
-                println!("{:#?}", trade);
+                logger.info(format!("{:#?}", trade)).ok();
             }
             _ => { panic!("Got a Binary body, should never get here") }
         }

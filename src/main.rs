@@ -2,6 +2,7 @@ use dotenv::dotenv;
 
 mod trade;
 mod feed_handler;
+mod logger;
 
 pub struct Config {
     pub server_url: String
