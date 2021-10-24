@@ -1,7 +1,6 @@
 use core::fmt;
 use std::error::Error;
-
-use serde::__private::Formatter;
+use std::fmt::Formatter;
 
 #[derive(Debug)]
 pub enum LogLevel {
