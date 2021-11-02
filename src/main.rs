@@ -1,17 +1,29 @@
+use std::sync::mpsc;
+
 use dotenv::dotenv;
 
-mod trade;
+use feed_handlers::BinanceTrade;
+use crate::logger::{Logger, FileLogWriter};
+
 mod feed_handlers;
 mod logger;
 
 pub struct Config {
-    pub server_url: String
+    pub server_url: String,
 }
 
 fn main() {
     let config: Config = parse_config();
 
-    feed_handlers::run_binance_feed_handler(&config);
+    let (tx, rx) = mpsc::channel::<BinanceTrade>();
+
+    std::thread::spawn(move || feed_handlers::run_binance_feed_handler(&config, tx.clone()));
+
+    let mut logger = Logger::new(FileLogWriter::new("binance_json_feed").unwrap());
+
+    for trade in rx {
+        logger.log(&format!("{:?}", trade)).unwrap();
+    }
 }
 
 fn parse_config() -> Config {

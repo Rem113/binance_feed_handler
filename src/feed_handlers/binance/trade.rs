@@ -6,7 +6,7 @@ pub enum Symbol {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Trade {
+pub struct BinanceTrade {
     #[serde(rename = "e")]
     event_type: String,
     #[serde(rename = "E")]
