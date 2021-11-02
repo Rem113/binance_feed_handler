@@ -1,37 +1,24 @@
-use core::fmt;
-use std::error::Error;
-use std::fmt::Formatter;
+use std::fs::File;
+use std::io::{Error, Write};
 
-#[derive(Debug)]
-pub enum LogLevel {
-    TRACE,
-    DEBUG,
-    INFO,
-    WARN,
-    ERROR,
-    FATAL,
+pub trait LogWriter {
+    fn write(&mut self, log: &str) -> Result<(), Error>;
 }
 
-impl fmt::Display for LogLevel {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{:?}", self)
+pub struct FileLogWriter {
+    file: File
+}
+
+impl FileLogWriter {
+    pub fn new(filename: &str) -> Result<FileLogWriter, Error> {
+        let file = std::fs::File::create(filename)?;
+        Ok(FileLogWriter { file })
     }
 }
 
-pub struct Log {
-    pub level: LogLevel,
-    pub message: String,
-}
-
-pub trait LogWriter {
-    fn write(&self, log: Log) -> Result<(), Box<dyn Error>>;
-}
-
-pub struct StdOutLogWriter;
-
-impl LogWriter for StdOutLogWriter {
-    fn write(&self, log: Log) -> Result<(), Box<dyn Error>> {
-        println!("{}: {}", log.level, log.message);
+impl LogWriter for FileLogWriter {
+    fn write(&mut self, log: &str) -> Result<(), Error> {
+        self.file.write(format!("{}\n", log).as_bytes())?;
         Ok(())
     }
 }
@@ -45,27 +32,7 @@ impl<W: LogWriter> Logger<W> {
         Logger { writer }
     }
 
-    pub fn trace(&self, message: String) -> Result<(), Box<dyn Error>> {
-        self.writer.write(Log { level: LogLevel::TRACE, message })
-    }
-
-    pub fn debug(&self, message: String) -> Result<(), Box<dyn Error>> {
-        self.writer.write(Log { level: LogLevel::DEBUG, message })
-    }
-
-    pub fn info(&self, message: String) -> Result<(), Box<dyn Error>> {
-        self.writer.write(Log { level: LogLevel::INFO, message })
-    }
-
-    pub fn warn(&self, message: String) -> Result<(), Box<dyn Error>> {
-        self.writer.write(Log { level: LogLevel::WARN, message })
-    }
-
-    pub fn error(&self, message: String) -> Result<(), Box<dyn Error>> {
-        self.writer.write(Log { level: LogLevel::ERROR, message })
-    }
-
-    pub fn fatal(&self, message: String) -> Result<(), Box<dyn Error>> {
-        self.writer.write(Log { level: LogLevel::FATAL, message })
+    pub fn log(&mut self, message: &str) -> Result<(), Error> {
+        self.writer.write(message)
     }
 }

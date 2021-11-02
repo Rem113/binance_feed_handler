@@ -1,7 +1,7 @@
 use dotenv::dotenv;
 
 mod trade;
-mod feed_handler;
+mod feed_handlers;
 mod logger;
 
 pub struct Config {
@@ -11,7 +11,7 @@ pub struct Config {
 fn main() {
     let config: Config = parse_config();
 
-    feed_handler::run(&config);
+    feed_handlers::run_binance_feed_handler(&config);
 }
 
 fn parse_config() -> Config {
