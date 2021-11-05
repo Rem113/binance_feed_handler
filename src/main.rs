@@ -5,8 +5,11 @@ use dotenv::dotenv;
 use feed_handlers::BinanceTrade;
 use crate::logger::{Logger, FileLogWriter};
 
+use normalizers::Normalizer;
+
 mod feed_handlers;
 mod logger;
+mod normalizers;
 
 pub struct Config {
     pub server_url: String,
@@ -22,7 +25,7 @@ fn main() {
     let mut logger = Logger::new(FileLogWriter::new("binance_json_feed").unwrap());
 
     for trade in rx {
-        logger.log(&format!("{:?}", trade)).unwrap();
+        logger.log(&format!("{:?}", trade.normalize())).unwrap();
     }
 }
 

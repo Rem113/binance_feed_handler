@@ -28,3 +28,17 @@ pub struct BinanceTrade {
     #[serde(rename = "m")]
     buyer_is_market_maker: bool,
 }
+
+impl BinanceTrade {
+    pub fn price(&self) -> &str {
+        &self.price
+    }
+    
+    pub fn quantity(&self) -> &str {
+        &self.quantity
+    }
+    
+    pub fn trade_time(&self) -> usize {
+        self.trade_time
+    }
+}

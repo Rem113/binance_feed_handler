@@ -1,5 +1,5 @@
 mod binance_feed_handler;
-mod trade;
+mod binance_trade;
 
 pub use binance_feed_handler::run as run_binance_feed_handler;
-pub use trade::BinanceTrade;
+pub use binance_trade::BinanceTrade;

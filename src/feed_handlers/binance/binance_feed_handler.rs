@@ -4,7 +4,7 @@ use websocket::message::OwnedMessage::{self, Text};
 use websocket::websocket_base::stream::sync::NetworkStream;
 
 use crate::Config;
-use crate::feed_handlers::binance::trade::BinanceTrade;
+use crate::feed_handlers::binance::binance_trade::BinanceTrade;
 use std::sync::mpsc::Sender;
 
 pub fn run(config: &Config, tx: Sender<BinanceTrade>) {
