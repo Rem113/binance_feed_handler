@@ -3,13 +3,12 @@ use std::sync::mpsc;
 use dotenv::dotenv;
 
 use feed_handlers::BinanceTrade;
-use crate::logger::{Logger, FileLogWriter};
 
-use normalizers::Normalizer;
+use crate::feed_handlers::NormalizedTrade;
+use crate::logging::{FileLogWriter, Logger, StdoutLogWriter};
 
 mod feed_handlers;
-mod logger;
-mod normalizers;
+mod logging;
 
 pub struct Config {
     pub server_url: String,
@@ -22,11 +21,29 @@ fn main() {
 
     std::thread::spawn(move || feed_handlers::run_binance_feed_handler(&config, tx.clone()));
 
-    let mut logger = Logger::new(FileLogWriter::new("binance_json_feed").unwrap());
+    let mut binance_file_logger = Logger::new(FileLogWriter::new("binance_json_feed").unwrap());
+    let mut normalized_file_logger = Logger::new(FileLogWriter::new("normalized_json_feed").unwrap());
+    let mut console_logger = Logger::new(StdoutLogWriter {});
 
     for trade in rx {
-        logger.log(&format!("{:?}", trade.normalize())).unwrap();
+        let log = format!("{:?}", trade);
+        console_logger.log(&log).unwrap();
+
+        handle_binance_trade(trade.clone(), &mut binance_file_logger);
+        handle_normalized_trade(trade.normalize(), &mut normalized_file_logger);
     }
+}
+
+fn handle_binance_trade(binance_trade: BinanceTrade, logger: &mut Logger<FileLogWriter>) {
+    let log = format!("{:?}", binance_trade);
+
+    logger.log(&log).unwrap();
+}
+
+fn handle_normalized_trade(normalized_trade: NormalizedTrade, logger: &mut Logger<FileLogWriter>) {
+    let log = format!("{:?}", normalized_trade);
+
+    logger.log(&log).unwrap();
 }
 
 fn parse_config() -> Config {

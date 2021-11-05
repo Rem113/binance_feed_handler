@@ -2,15 +2,15 @@
 pub struct NormalizedTrade {
     timestamp: usize,
     price: String,
-    amount: String,
+    quantity: String,
 }
 
 impl NormalizedTrade {
-    pub fn new(timestamp: usize, price: String, amount: String) -> NormalizedTrade {
+    pub fn new(timestamp: usize, price: String, quantity: String) -> NormalizedTrade {
         NormalizedTrade {
             timestamp,
             price,
-            amount,
+            quantity,
         }
     }
 }
